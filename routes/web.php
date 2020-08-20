@@ -21,7 +21,7 @@ Route::group(['middleware' => ['get.menu']], function () {
         Route::get('/widgets', function () {    return view('dashboard.widgets'); });
         Route::get('/404', function () {        return view('dashboard.404'); });
         Route::get('/500', function () {        return view('dashboard.500'); });
-        Route::prefix('base')->group(function () {  
+        Route::prefix('base')->group(function () {
             Route::get('/breadcrumb', function(){   return view('dashboard.base.breadcrumb'); });
             Route::get('/cards', function(){        return view('dashboard.base.cards'); });
             Route::get('/carousel', function(){     return view('dashboard.base.carousel'); });
@@ -42,7 +42,7 @@ Route::group(['middleware' => ['get.menu']], function () {
             Route::get('/tabs', function () {       return view('dashboard.base.tabs'); });
             Route::get('/tooltips', function () {   return view('dashboard.base.tooltips'); });
         });
-        Route::prefix('buttons')->group(function () {  
+        Route::prefix('buttons')->group(function () {
             Route::get('/buttons', function(){          return view('dashboard.buttons.buttons'); });
             Route::get('/button-group', function(){     return view('dashboard.buttons.button-group'); });
             Route::get('/dropdowns', function(){        return view('dashboard.buttons.dropdowns'); });
@@ -53,7 +53,7 @@ Route::group(['middleware' => ['get.menu']], function () {
             Route::get('/flags', function(){                return view('dashboard.icons.flags'); });
             Route::get('/brands', function(){               return view('dashboard.icons.brands'); });
         });
-        Route::prefix('notifications')->group(function () {  
+        Route::prefix('notifications')->group(function () {
             Route::get('/alerts', function(){   return view('dashboard.notifications.alerts'); });
             Route::get('/badge', function(){    return view('dashboard.notifications.badge'); });
             Route::get('/modals', function(){   return view('dashboard.notifications.modals'); });
@@ -81,7 +81,7 @@ Route::group(['middleware' => ['get.menu']], function () {
         Route::post('mailSend/{id}',        'MailController@send')->name('mailSend');
         Route::get('/roles/move/move-up',      'RolesController@moveUp')->name('roles.up');
         Route::get('/roles/move/move-down',    'RolesController@moveDown')->name('roles.down');
-        Route::prefix('menu/element')->group(function () { 
+        Route::prefix('menu/element')->group(function () {
             Route::get('/',             'MenuElementController@index')->name('menu.index');
             Route::get('/move-up',      'MenuElementController@moveUp')->name('menu.up');
             Route::get('/move-down',    'MenuElementController@moveDown')->name('menu.down');
@@ -93,7 +93,7 @@ Route::group(['middleware' => ['get.menu']], function () {
             Route::get('/show',         'MenuElementController@show')->name('menu.show');
             Route::get('/delete',       'MenuElementController@delete')->name('menu.delete');
         });
-        Route::prefix('menu/menu')->group(function () { 
+        Route::prefix('menu/menu')->group(function () {
             Route::get('/',         'MenuController@index')->name('menu.menu.index');
             Route::get('/create',   'MenuController@create')->name('menu.menu.create');
             Route::post('/store',   'MenuController@store')->name('menu.menu.store');
@@ -119,3 +119,9 @@ Route::group(['middleware' => ['get.menu']], function () {
         });
     });
 });
+
+
+Route::get('userslist', function(){
+    return datatables()->of(\DB::table('users')->select('*'))
+        ->make(true);
+})->name('userslist');
