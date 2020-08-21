@@ -11,10 +11,10 @@
                             <i class="fa fa-align-justify"></i> {{ __('Edit') }} {{ $user->name }}</div>
                         <div class="card-body">
                             <br>
+                            <x-alert/>
                             <form method="POST" action="/users/{{ $user->id }}">
                                 @csrf
                                 @method('PUT')
-                                <x-alert/>
                                 {!! Form::model($user, ['method' => 'PATCH','route' => ['users.update', $user->id]]) !!}
                                 <div class="row">
                                     <div class="col-xs-12 col-sm-12 col-md-12">

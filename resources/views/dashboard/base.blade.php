@@ -8,9 +8,10 @@
 -->
 
 <html lang="en">
-  <head>
+<head>
     <base href="./">
     <meta charset="utf-8">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
     <meta name="description" content="CoreUI - Open Source Bootstrap Admin Template">
@@ -40,55 +41,80 @@
     <!-- Main styles for this application-->
     <link href="{{ asset('css/style.css') }}" rel="stylesheet">
 
-    @yield('css')
+@yield('css')
 
-    <!-- Global site tag (gtag.js) - Google Analytics-->
+<!-- Global site tag (gtag.js) - Google Analytics-->
     <script async="" src="https://www.googletagmanager.com/gtag/js?id=UA-118965717-3"></script>
     <script>
-      window.dataLayer = window.dataLayer || [];
+        window.dataLayer = window.dataLayer || [];
 
-      function gtag() {
-        dataLayer.push(arguments);
-      }
-      gtag('js', new Date());
-      // Shared ID
-      gtag('config', 'UA-118965717-3');
-      // Bootstrap ID
-      gtag('config', 'UA-118965717-5');
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+
+        gtag('js', new Date());
+        // Shared ID
+        gtag('config', 'UA-118965717-3');
+        // Bootstrap ID
+        gtag('config', 'UA-118965717-5');
     </script>
 
     <link href="{{ asset('css/coreui-chartjs.css') }}" rel="stylesheet">
-  </head>
+</head>
 
 
+<body class="c-app">
+<div class="c-sidebar c-sidebar-dark c-sidebar-fixed c-sidebar-lg-show" id="sidebar">
 
-  <body class="c-app">
-    <div class="c-sidebar c-sidebar-dark c-sidebar-fixed c-sidebar-lg-show" id="sidebar">
+    @include('dashboard.shared.nav-builder')
 
-      @include('dashboard.shared.nav-builder')
+    @include('dashboard.shared.header')
 
-      @include('dashboard.shared.header')
-
-      <div class="c-body">
+    <div class="c-body">
 
         <main class="c-main">
 
-          @yield('content') 
+            @yield('content')
 
         </main>
         @include('dashboard.shared.footer')
-      </div>
     </div>
+</div>
+
+
+<!-- CoreUI and necessary plugins-->
+<script src="{{ asset('js/coreui.bundle.min.js') }}"></script>
+<script src="{{ asset('js/coreui-utils.js') }}"></script>
 
 
 
-    <!-- CoreUI and necessary plugins-->
-    <script src="{{ asset('js/coreui.bundle.min.js') }}"></script>
-    <script src="{{ asset('js/coreui-utils.js') }}"></script>
-    @yield('javascript')
+@yield('javascript')
+
+<script>
+    $('#laravel_datatable').on('click', '.btn-danger[data-remote]', function (e) {
+        var choice = confirm('آیا مطمئن هستید؟');
+        if (choice !== true) {
+            return false;
+        }
+        e.preventDefault();
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        var url = $(this).data('remote');
+        // confirm then
+        $.ajax({
+            url: url,
+            type: 'DELETE',
+            dataType: 'json',
+            data: {method: '_DELETE', submit: true}
+        }).always(function (data) {
+            $('#laravel_datatable').DataTable().draw(false);
+        });
+    });
+</script>
 
 
-
-
-  </body>
+</body>
 </html>

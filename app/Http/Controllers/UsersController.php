@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\UserRequest;
 use Illuminate\Http\Request;
 use App\User;
+use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
 class UsersController extends Controller
@@ -28,7 +29,16 @@ class UsersController extends Controller
      */
     public function index()
     {
+
         $you = auth()->user();
+
+
+        $role = Role::find(1);
+
+//        Permission::create(['name' => 'users-update']);
+//        $role->givePermissionTo('users-update');
+
+//        return $you->with('permissions')->first();
         $users = User::all();
         return view('dashboard.admin.usersList', compact('users', 'you'));
     }
@@ -97,6 +107,6 @@ class UsersController extends Controller
         if ($user) {
             $user->delete();
         }
-        return redirect()->route('users.index');
+        return true;
     }
 }
