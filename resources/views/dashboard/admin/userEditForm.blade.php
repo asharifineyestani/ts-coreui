@@ -14,24 +14,57 @@
                         <form method="POST" action="/users/{{ $user->id }}">
                             @csrf
                             @method('PUT')
-                            <div class="input-group mb-3">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text">
-                                      <svg class="c-icon c-icon-sm">
-                                          <use xlink:href="/assets/icons/coreui/free-symbol-defs.svg#cui-user"></use>
-                                      </svg>
-                                    </span>
+                            @if (count($errors) > 0)
+                                <div class="alert alert-danger">
+                                    <strong>Whoops!</strong> There were some problems with your input.<br><br>
+                                    <ul>
+                                        @foreach ($errors->all() as $error)
+                                            <li>{{ $error }}</li>
+                                        @endforeach
+                                    </ul>
                                 </div>
-                                <input class="form-control" type="text" placeholder="{{ __('Name') }}" name="name" value="{{ $user->name }}" required autofocus>
-                            </div>
-                            <div class="input-group mb-3">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text">@</span>
+                            @endif
+                            {!! Form::model($user, ['method' => 'PATCH','route' => ['users.update', $user->id]]) !!}
+                            <div class="row">
+                                <div class="col-xs-12 col-sm-12 col-md-12">
+                                    <div class="form-group">
+                                        <strong>Name:</strong>
+                                        {!! Form::text('name', null, array('placeholder' => 'Name','class' => 'form-control')) !!}
+                                    </div>
                                 </div>
-                                <input class="form-control" type="text" placeholder="{{ __('E-Mail Address') }}" name="email" value="{{ $user->email }}" required>
+                                <div class="col-xs-12 col-sm-12 col-md-12">
+                                    <div class="form-group">
+                                        <strong>Email:</strong>
+                                        {!! Form::text('email', null, array('placeholder' => 'Email','class' => 'form-control')) !!}
+                                    </div>
+                                </div>
+                                <div class="col-xs-12 col-sm-12 col-md-12">
+                                    <div class="form-group">
+                                        <strong>Password:</strong>
+                                        {!! Form::password('password', array('placeholder' => 'Password','class' => 'form-control')) !!}
+                                    </div>
+                                </div>
+                                <div class="col-xs-12 col-sm-12 col-md-12">
+                                    <div class="form-group">
+                                        <strong>Confirm Password:</strong>
+                                        {!! Form::password('confirm-password', array('placeholder' => 'Confirm Password','class' => 'form-control')) !!}
+                                    </div>
+                                </div>
+                                <div class="col-xs-12 col-sm-12 col-md-12">
+                                    <div class="form-group">
+                                        <strong>Role:</strong>
+                                        {!! Form::select('roles[]', $roles,$userRole, array('class' => 'form-control','multiple')) !!}
+                                    </div>
+                                </div>
+
+
+                                <div class="col-xs-12 col-sm-12 col-md-12 text-center">
+
+                                    <button class="btn btn-block btn-success" type="submit">{{ __('Save') }}</button>
+                                    <a href="{{ route('users.index') }}" class="btn btn-block btn-primary">{{ __('Return') }}</a>
+                                </div>
                             </div>
-                            <button class="btn btn-block btn-success" type="submit">{{ __('Save') }}</button>
-                            <a href="{{ route('users.index') }}" class="btn btn-block btn-primary">{{ __('Return') }}</a> 
+                            {!! Form::close() !!}
                         </form>
                     </div>
                 </div>
