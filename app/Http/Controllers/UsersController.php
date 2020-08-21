@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UserRequest;
 use Illuminate\Http\Request;
 use App\User;
 use Spatie\Permission\Models\Role;
@@ -67,14 +68,9 @@ class UsersController extends Controller
      * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UserRequest $request, $id)
     {
-        $this->validate($request, [
-            'name' => 'required',
-            'email' => 'required|email|unique:users,email,' . $id,
-            'password' => 'same:confirm-password',
-            'roles' => 'required'
-        ]);
+
         $input = $request->all();
         if (!empty($input['password'])) {
             $input['password'] = Hash::make($input['password']);
