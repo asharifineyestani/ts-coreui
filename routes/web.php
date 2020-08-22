@@ -187,17 +187,4 @@ Route::group(['middleware' => ['get.menu']], function () {
 });
 
 
-Route::get('userslist', function () {
-
-
-    $data = \App\User::select('*');
-    return \Yajra\DataTables\DataTables::of($data)
-        ->addIndexColumn()
-        ->addColumn('action', function ($row) {
-            return view('components.actions', ['id' => $row->id, 'table' => 'users']);
-        })
-        ->rawColumns(['action'])
-        ->make(true);
-
-
-})->name('userslist');
+Route::get('ajx/users', 'UsersController@dataTable')->name('ajx.users');
