@@ -10,8 +10,8 @@
                             <i class="fa fa-align-justify"></i>{{ __('Users') }}</div>
                         <div class="card-body">
                             <div class="row">
-                                @can($entities.'-create')
-                                    <a href="http://localhost:8000/notes/create" class="btn btn-primary m-2">Add
+                                @can($crud->permission('delete'))
+                                    <a href="{{$crud->route('create')}}" class="btn btn-primary m-2">Add
                                         New</a>
                                 @endcan
                             </div>
@@ -19,7 +19,7 @@
                             <table class="table table-bordered data-table" id="laravel_datatable">
                                 <thead>
                                 <tr>
-                                    @foreach($columns as $column)
+                                    @foreach($crud->columns as $column)
                                         <th>{{$column['name']}}</th>
                                     @endforeach
                                 </tr>
@@ -34,6 +34,10 @@
 @endsection
 
 
+
+@php
+
+    @endphp
 @section('javascript')
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.0/jquery.validate.js"></script>
@@ -46,10 +50,10 @@
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: "{{ Route("ajx.".$entities) }}",
+                    url: "{{$crud->route('datatable')}}",
                     method: "GET"
                 },
-                columns: {!! $datable_columns !!}
+                columns: {!! $crud->getDatatableColumns() !!}
             });
         });
     </script>
