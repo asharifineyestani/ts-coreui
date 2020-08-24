@@ -4,6 +4,10 @@
 namespace App\Classes;
 
 
+use App\User;
+use Illuminate\Support\Arr;
+use Spatie\Permission\Models\Role;
+
 class Crud
 {
 
@@ -11,15 +15,13 @@ class Crud
     public $entities;
     public $columns = [];
     public $fields = [];
+    public $object;
 
-
-    public function __construct()
-    {
-    }
 
     public function setModel(string $model)
     {
         $this->model = $model;
+        $this->object = new $model();
     }
 
 
@@ -57,8 +59,32 @@ class Crud
             return $values;
         }
 
+        for ($i = 0; $i < count($this->fields); $i++) {
+
+            foreach ($this->fields[$i] as $key => $value) {
+                $this->fields[$i] = $this->checkRelationField($this->fields[$i]);
+            }
+        }
+
 
         return $this->fields;
+    }
+
+
+    public function checkRelationField($field)
+    {
+        if ($field['type'] !== 'relation')
+            return $field;
+
+        foreach (array_keys($field) as $key) {
+            $relationType = $this->getRelationType($this->object, $field['name']);
+
+
+            $field['type'] = $this->isMultiple($relationType) ? 'select2_multiple' : 'select2';
+            $field['attribute'] = $field['attribute'] ?? 'id';
+        }
+
+        return $field;
     }
 
     public function getValidations()
@@ -90,8 +116,7 @@ class Crud
 
     public function setField($field)
     {
-//        dd(debug_backtrace());
-
+        //dd(debug_backtrace());
         array_push($this->fields, $field);
         return $this;
     }
@@ -134,7 +159,6 @@ class Crud
     public function resetFields()
     {
         $this->fields = [];
-
         return $this;
     }
 
@@ -152,19 +176,106 @@ class Crud
         }
     }
 
+
+    public function isMultiple($relation_type)
+    {
+        if (in_array($relation_type, [
+            'BelongsToMany',
+            'HasMany',
+            'HasManyThrough',
+            'HasOneOrMany',
+            'MorphMany',
+            'MorphOneOrMany',
+            'MorphToMany',
+        ]))
+            return true;
+        else
+            return false;
+
+    }
+
+
+    public function getMethodInfo($object, $methodName)
+    {
+        $reflection = new \ReflectionClass(get_class($object));
+        $method = $reflection->getMethod($methodName);
+        $method->setAccessible(true);
+
+        $result = $method->invokeArgs($object, []);
+
+        dump($result);
+    }
+
+
+    public function getRelationType($object, $methodName)
+    {
+        return get_class($object->{$methodName}()->getRelated());
+        $relationType = new \ReflectionClass($object->{$methodName}());
+        return $relationType->getShortName();
+
+        //or
+        //$oReflectionClass = new \ReflectionClass($object);
+        //$method = $oReflectionClass->getMethod($methodName);
+        //$relationType = get_class($method->invoke($object));
+        //$exploded = explode("\\", $relationType);
+        //return end($exploded);
+    }
+
+
     public function getRelationships()
     {
-        $reflector = new \ReflectionClass($this->model);
+
+        //or
+        //$reflector = new \ReflectionClass($this->model);
+        //$relations = [];
+        //foreach ($reflector->getMethods() as $reflectionMethod) {
+        //    $returnType = $reflectionMethod->getReturnType();
+        //    if ($returnType) {
+        //        if (in_array(class_basename($returnType->getName()), ['HasOne', 'HasMany', 'BelongsTo', 'BelongsToMany', 'MorphToMany', 'MorphTo'])) {
+        //            $arr = (array)$reflectionMethod;
+        //            $relations[$arr['name']] = $returnType->getName();
+        //            $relations[] = $reflectionMethod;
+        //        }
+        //    }
+        //}
+        //return ($relations);
+
+
+        $object = new User();
+        $reflector = new \ReflectionClass($object);
         $relations = [];
-        foreach ($reflector->getMethods() as $reflectionMethod) {
-            $returnType = $reflectionMethod->getReturnType();
-            if ($returnType) {
-                if (in_array(class_basename($returnType->getName()), ['HasOne', 'HasMany', 'BelongsTo', 'BelongsToMany', 'MorphToMany', 'MorphTo'])) {
-                    $arr = (array)$reflectionMethod;
-                    $relations[$arr['name']] = $returnType->getName();
-                }
+
+
+        $public = $reflector->getMethods(\ReflectionMethod::IS_PUBLIC);
+        $static = $reflector->getMethods(\ReflectionMethod::IS_STATIC);
+        $m = array_diff($public, $static);
+
+
+        foreach ($m as $reflectionMethod) {
+            $methodName = ((array)$reflectionMethod)['name'];
+            $method = $reflector->getMethod($methodName);
+            $method->setAccessible(true);
+
+
+            $type = ($method->invoke($object));
+            if ((in_array(class_basename($type), ['HasOne', 'HasMany', 'BelongsTo', 'BelongsToMany', 'MorphToMany', 'MorphTo']))) {
+                $relations['relationship_type'] = get_class($type);
+                $relations['name'] = $methodName;
             }
+
+
+            return ($relations);
+
         }
-        return ($relations);
+        dd($relations);
+
     }
+
+
+    public function getRelated($object, $methodName)
+    {
+        return get_class($object->{$methodName}()->getRelated());
+    }
+
+
 }
