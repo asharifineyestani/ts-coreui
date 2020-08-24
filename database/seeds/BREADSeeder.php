@@ -56,15 +56,34 @@ class BREADSeeder extends Seeder
             'relation_column' => 'name'
         ]);
         $role = Role::where('name', '=', 'guest')->first();
-        Permission::create(['name' => 'browse bread '   . $formId]); 
-        Permission::create(['name' => 'read bread '     . $formId]); 
-        Permission::create(['name' => 'edit bread '     . $formId]); 
-        Permission::create(['name' => 'add bread '      . $formId]); 
-        Permission::create(['name' => 'delete bread '   . $formId]); 
-        $role->givePermissionTo('browse bread '     . $formId);
-        $role->givePermissionTo('read bread '       . $formId);
-        $role->givePermissionTo('edit bread '       . $formId);
-        $role->givePermissionTo('add bread '        . $formId);
-        $role->givePermissionTo('delete bread '     . $formId);
+        Permission::create(['name' => 'browse bread ' . $formId]);
+        Permission::create(['name' => 'read bread ' . $formId]);
+        Permission::create(['name' => 'edit bread ' . $formId]);
+        Permission::create(['name' => 'add bread ' . $formId]);
+        Permission::create(['name' => 'delete bread ' . $formId]);
+        Permission::create(['name' => 'users-read']);
+        Permission::create(['name' => 'users-insert']);
+        Permission::create(['name' => 'users-update']);
+        Permission::create(['name' => 'users-delete']);
+        Permission::create(['name' => 'notes-read']);
+        Permission::create(['name' => 'notes-insert']);
+        Permission::create(['name' => 'notes-update']);
+        Permission::create(['name' => 'notes-delete']);
+        $role->givePermissionTo('browse bread ' . $formId);
+        $role->givePermissionTo('read bread ' . $formId);
+        $role->givePermissionTo('edit bread ' . $formId);
+        $role->givePermissionTo('add bread ' . $formId);
+        $role->givePermissionTo('delete bread ' . $formId);
+
+
+        $admin = Role::where('name', '=', 'admin')->first();
+        $admin->givePermissionTo('users-read');
+        $admin->givePermissionTo('users-insert');
+        $admin->givePermissionTo('users-update');
+        $admin->givePermissionTo('users-delete');
+        $admin->givePermissionTo('notes-read');
+        $admin->givePermissionTo('notes-insert');
+        $admin->givePermissionTo('notes-update');
+        $admin->givePermissionTo('notes-delete');
     }
 }
