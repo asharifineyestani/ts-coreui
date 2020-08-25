@@ -82,6 +82,8 @@ class Crud
 
             $field['type'] = $this->isMultiple($relationType) ? 'select2_multiple' : 'select2';
             $field['attribute'] = $field['attribute'] ?? 'id';
+            $field['attribute'] = $field['attribute'] ?? 'id';
+            $field['model'] = $this->getRelated($this->object, $field['name']);
         }
 
         return $field;
@@ -209,7 +211,7 @@ class Crud
 
     public function getRelationType($object, $methodName)
     {
-        return get_class($object->{$methodName}()->getRelated());
+//        return get_class($object->{$methodName}()->getRelated());
         $relationType = new \ReflectionClass($object->{$methodName}());
         return $relationType->getShortName();
 

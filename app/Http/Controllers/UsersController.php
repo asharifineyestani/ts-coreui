@@ -108,12 +108,10 @@ class UsersController extends CrudController
 
         $this->crud->setField(
             [
-                'type' => 'select2_multiple',
-                'label' => 'نقش ها',
+                'type' => 'relation',
                 'name' => 'roles',
-                'model' => Role::class,
                 'attribute' => 'name',
-
+                'label' => 'نقش ها',
             ]
         );
 
