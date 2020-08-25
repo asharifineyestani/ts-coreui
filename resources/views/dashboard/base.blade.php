@@ -40,7 +40,7 @@
     <link href="{{ asset('css/flag-icon.min.css') }}" rel="stylesheet"> <!-- icons -->
     <!-- Main styles for this application-->
     <link href="{{ asset('css/style.css') }}" rel="stylesheet">
-
+    <link href="{{ asset('css/persian-datepicker.css') }}" rel="stylesheet">
 @yield('css')
 
 <!-- Global site tag (gtag.js) - Google Analytics-->
@@ -85,35 +85,15 @@
 <!-- CoreUI and necessary plugins-->
 <script src="{{ asset('js/coreui.bundle.min.js') }}"></script>
 <script src="{{ asset('js/coreui-utils.js') }}"></script>
-
+<script
+    src="https://code.jquery.com/jquery-3.5.1.min.js"
+    integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="
+    crossorigin="anonymous"></script>
 
 
 @yield('javascript')
 
-<script>
-    $('#laravel_datatable').on('click', '.btn-danger[data-remote]', function (e) {
-        var choice = confirm('آیا مطمئن هستید؟');
-        if (choice !== true) {
-            return false;
-        }
-        e.preventDefault();
-        $.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            }
-        });
-        var url = $(this).data('remote');
-        // confirm then
-        $.ajax({
-            url: url,
-            type: 'DELETE',
-            dataType: 'json',
-            data: {method: '_DELETE', submit: true}
-        }).always(function (data) {
-            $('#laravel_datatable').DataTable().draw(false);
-        });
-    });
-</script>
+
 
 
 </body>

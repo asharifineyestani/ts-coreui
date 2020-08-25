@@ -14,7 +14,7 @@ const mix = require('laravel-mix');
 //mix.js('resources/js/app.js', 'public/js')
 //mix.sass('resources/sass/app.scss', 'public/css');
 
-//**************** CSS ******************** 
+//**************** CSS ********************
 //css
 //mix.copy('resources/vendors/pace-progress/css/pace.min.css', 'public/css');
 mix.copy('node_modules/@coreui/chartjs/dist/css/coreui-chartjs.css', 'public/css');
@@ -22,14 +22,14 @@ mix.copy('node_modules/cropperjs/dist/cropper.css', 'public/css');
 //main css
 mix.sass('resources/sass/style.scss', 'public/css');
 
-//************** SCRIPTS ****************** 
+//************** SCRIPTS ******************
 // general scripts
 mix.copy('node_modules/@coreui/utils/dist/coreui-utils.js', 'public/js');
-mix.copy('node_modules/axios/dist/axios.min.js', 'public/js'); 
-//mix.copy('node_modules/pace-progress/pace.min.js', 'public/js');  
-mix.copy('node_modules/@coreui/coreui/dist/js/coreui.bundle.min.js', 'public/js'); 
+mix.copy('node_modules/axios/dist/axios.min.js', 'public/js');
+//mix.copy('node_modules/pace-progress/pace.min.js', 'public/js');
+mix.copy('node_modules/@coreui/coreui/dist/js/coreui.bundle.min.js', 'public/js');
 // views scripts
-mix.copy('node_modules/chart.js/dist/Chart.min.js', 'public/js'); 
+mix.copy('node_modules/chart.js/dist/Chart.min.js', 'public/js');
 mix.copy('node_modules/@coreui/chartjs/dist/js/coreui-chartjs.bundle.js', 'public/js');
 
 mix.copy('node_modules/cropperjs/dist/cropper.js', 'public/js');
@@ -45,7 +45,7 @@ mix.js('resources/js/coreui/menu-create.js', 'public/js');
 mix.js('resources/js/coreui/menu-edit.js', 'public/js');
 mix.js('resources/js/coreui/media.js', 'public/js');
 mix.js('resources/js/coreui/media-cropp.js', 'public/js');
-//*************** OTHER ****************** 
+//*************** OTHER ******************
 //fonts
 mix.copy('node_modules/@coreui/icons/fonts', 'public/fonts');
 //icons
@@ -57,3 +57,10 @@ mix.copy('node_modules/@coreui/icons/svg/flag', 'public/svg/flag');
 mix.copy('node_modules/@coreui/icons/sprites/', 'public/icons/sprites');
 //images
 mix.copy('resources/assets', 'public/assets');
+
+
+
+
+mix.copy('node_modules/persian-date/dist/persian-date.js', 'public/js');
+mix.copy('node_modules/persian-datepicker/dist/js/persian-datepicker.js', 'public/js');
+mix.copy('node_modules/persian-datepicker/dist/css/persian-datepicker.css', 'public/css');
