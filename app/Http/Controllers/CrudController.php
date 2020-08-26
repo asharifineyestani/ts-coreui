@@ -4,12 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Classes\Crud;
 use App\Http\Requests\UserRequest;
-use App\Models\Notes;
 use Illuminate\Http\Request;
 use App\User;
 use Illuminate\Support\Facades\Hash;
-use Spatie\Permission\Models\Permission;
-use Spatie\Permission\Models\Role;
+
 
 class CrudController extends Controller
 {
@@ -85,28 +83,37 @@ class CrudController extends Controller
     }
 
 
-    public function store(UserRequest $request)
+    public function store(Request $request)
     {
         $this->setupCreate();
-        $field = $request->only($this->crud->getFields('name'));
+
         $this->validate($request, $this->crud->getValidations());
-        $input = $field;
-//        $input['password'] = Hash::make($input['password']);
-        $user = $this->crud->model::create($input);
-//        $user->assignRole($request->input('roles'));
-        return redirect($this->crud->route('index'))
-            ->with('success', 'User created successfully');
 
+        $fields = $request->only($this->crud->getFields('name'));
 
+        $new = $this->crud->model::create($fields);
+
+        foreach ($request->input('mediable', []) as $file) {
+
+            $new->addMedia(storage_path('tmp/' . $file))->toMediaCollection('document');
+        }
+
+        return redirect($this->crud->route('index'));
     }
 
 
     public function destroy($id)
     {
-        $user = User::find($id);
-        if ($user) {
-            $user->delete();
+
+        $user = $this->crud->model::find($id);
+
+
+        foreach ($user->getMedia() as $media) {
+            $media->delete();
         }
+
+        $user->delete();
+
         return true;
     }
 
