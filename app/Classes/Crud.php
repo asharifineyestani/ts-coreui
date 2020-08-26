@@ -16,6 +16,13 @@ class Crud
     public $columns = [];
     public $fields = [];
     public $object;
+    public $mediaPath;
+
+
+    public function __construct()
+    {
+        $this->mediaPath = storage_path('tmp/uploads');
+    }
 
 
     public function setModel(string $model)
@@ -211,7 +218,7 @@ class Crud
 
     public function getRelationType($object, $methodName)
     {
-//        return get_class($object->{$methodName}()->getRelated());
+        //        return get_class($object->{$methodName}()->getRelated());
         $relationType = new \ReflectionClass($object->{$methodName}());
         return $relationType->getShortName();
 
