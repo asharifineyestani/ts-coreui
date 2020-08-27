@@ -14,7 +14,7 @@
 
 
 <select
-    name="{{ $field['name'] }}[]"
+    name="{{ $field['name'] ?? $field['method'] }}[]"
     data-select-all="{{ var_export($field['select_all'] ?? false)}}"
     data-options-for-js="{{json_encode(array_values($options_ids_array))}}"
     class="{{$class}} select2-basic-multiple"
@@ -26,7 +26,7 @@
 
     @if (isset($field['model']))
         @foreach ($field['options'] as $option)
-            @if( (old($field["name"]) && in_array($option->getKey(), old($field["name"]))) || (is_null(old($field["name"])) && isset($field['value']) && in_array($option->getKey(), $field['value']->pluck($option->getKeyName(), $option->getKeyName())->toArray())))
+            @if( (old($field["name"]  ?? $field['method']) && in_array($option->getKey(), old($field["name"]  ?? $field['method'] ))) || (is_null(old($field["name"]  ?? $field['method'])) && isset($field['value']) && in_array($option->getKey(), $field['value']->pluck($option->getKeyName(), $option->getKeyName())->toArray())))
                 <option value="{{ $option->getKey() }}" selected>{{ $option->{$field['attribute']} }}</option>
             @else
                 <option value="{{ $option->getKey() }}">{{ $option->{$field['attribute']} }}</option>

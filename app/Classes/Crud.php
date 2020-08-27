@@ -71,7 +71,7 @@ class Crud
         if ($key) {
             $values = [];
             for ($i = 0; $i < count($this->fields); $i++)
-                $values[] = $this->fields[$i][$key] ?? '';
+                $values[] = $this->checkRelationField($this->fields[$i])[$key] ?? '';
             return $values;
         }
 
@@ -92,14 +92,16 @@ class Crud
         if ($field['type'] !== 'relation')
             return $field;
 
-        foreach (array_keys($field) as $key) {
-            $relationType = $this->getRelationType($this->object, $field['name']);
 
+        foreach (array_keys($field) as $key) {
+            $relationType = $this->getRelationType($this->object, $field['method']);
 
             $field['type'] = $this->isMultiple($relationType) ? 'select2_multiple' : 'select2';
             $field['attribute'] = $field['attribute'] ?? 'id';
-            $field['attribute'] = $field['attribute'] ?? 'id';
-            $field['model'] = $this->getRelated($this->object, $field['name']);
+            $field['model'] = $this->getRelated($this->object, $field['method']);
+
+            if (!$this->isMultiple($relationType))
+                $field['name'] = $this->reflectionProperty($this->reflectionMethod($this->object, $field['method']), 'foreignKey');
         }
 
         return $field;
@@ -110,7 +112,7 @@ class Crud
         $validations = [];
 
         foreach ($this->fields as $field) {
-            $validations[$field['name']] = $field['validation'] ?? null;
+            $validations[$field['name'] ?? $field['method']] = $field['validation'] ?? null;
         }
         return array_filter($validations);
     }
@@ -194,7 +196,7 @@ class Crud
                 continue;
             }
 
-            $name = $this->fields[$i]['name'];
+            $name = $this->fields[$i]['name'] ?? $this->fields[$i]['method'];
             $this->fields[$i]['value'] = $this->row->$name ?? null;
         }
 
@@ -220,15 +222,19 @@ class Crud
     }
 
 
-    public function getMethodInfo($object, $methodName)
+    public function reflectionMethod($object, $methodName)
     {
         $reflection = new \ReflectionClass(get_class($object));
         $method = $reflection->getMethod($methodName);
         $method->setAccessible(true);
+        return $method->invokeArgs($object, []);
+    }
 
-        $result = $method->invokeArgs($object, []);
-
-        dump($result);
+    public function reflectionProperty($object, $propertyName)
+    {
+        $property = new \ReflectionProperty($object, $propertyName);
+        $property->setAccessible(true);
+        return $property->getValue($object);
     }
 
 
@@ -301,7 +307,6 @@ class Crud
     {
         return get_class($object->{$methodName}()->getRelated());
     }
-
 
 
     public function hasTrait($traitName)

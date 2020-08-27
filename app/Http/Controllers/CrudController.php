@@ -120,7 +120,7 @@ class CrudController extends Controller
         }
 
 
-        return redirect($this->crud->route('index'))->with('success', 'User updated successfully');
+        return redirect()->back()->with('success', 'User updated successfully');
     }
 
 
