@@ -3,9 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Classes\Crud;
-use App\Http\Requests\UserRequest;
 use Illuminate\Http\Request;
 use App\User;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 
@@ -24,11 +25,13 @@ class CrudController extends Controller
 
     }
 
+
     public function index()
     {
         $this->setupIndex();
         return view('dashboard.afra.datatable', ['crud' => $this->crud]);
     }
+
 
     public function show($id)
     {
@@ -49,6 +52,7 @@ class CrudController extends Controller
         );
     }
 
+
     public function edit($id)
     {
 
@@ -67,19 +71,49 @@ class CrudController extends Controller
         );
     }
 
-    public function update(UserRequest $request, $id)
+
+    public function update(Request $request, $id)
     {
+        $this->crud->setRow($id);
+        $this->setupEdit();
+
+
+        $this->validate($request, array_merge($this->crud->getValidations()));
+
+        $input = $request->only($this->crud->getFields('name'));
+
+        if (!empty($input['password'])) {
+            $input['password'] = Hash::make($input['password']);
+        } else {
+            $input = Arr::except($input, array('password'));
+
+        }
+
+        $this->crud->row->update($input);
+        DB::table('model_has_roles')->where('model_id', $id)->delete();
+        $this->crud->row->assignRole($request->input('roles'));
+
+
         $input = $request->all();
         if (!empty($input['password'])) {
             $input['password'] = Hash::make($input['password']);
         } else {
             $input = $request->except(['password']);
         }
-        $user = User::find($id);
-        $user->update($input);
-        \DB::table('model_has_roles')->where('model_id', $id)->delete();
-        $user->assignRole($request->input('roles'));
-        return back()->with('success', 'User updated successfully');
+
+
+        $media = $this->crud->row->getMedia('*')->pluck('file_name')->toArray();
+
+
+        foreach ($request->input('mediable', []) as $file) {
+            if (count($media) === 0 || !in_array($file, $media)) {
+                $this->crud->row->addMedia(storage_path('tmp/' . $file))->toMediaCollection();
+            }
+        }
+
+
+        return redirect()->route('users.index')
+            ->with('success', 'User updated successfully');
     }
 
 
@@ -117,6 +151,7 @@ class CrudController extends Controller
         return true;
     }
 
+
     public function dataTable()
     {
         $data = $this->crud->model::select('*');
@@ -135,20 +170,24 @@ class CrudController extends Controller
 
     }
 
+
     public function setupIndex()
     {
 
     }
+
 
     public function setupCreate()
     {
 
     }
 
+
     public function setupEdit()
     {
 
     }
+
 
 
     public function storeMedia(Request $request)
