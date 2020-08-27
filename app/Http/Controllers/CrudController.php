@@ -8,6 +8,8 @@ use App\User;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 
 class CrudController extends Controller
@@ -228,6 +230,24 @@ class CrudController extends Controller
         return $result;
 
 
+    }
+
+
+    public function deleteMedia($name)
+    {
+        $media = Media::where('name', $name)->first();
+
+        if (!$media)
+            return false;
+
+        Storage::delete($media->getPath());
+
+        if (file_exists($media->getPath()))
+            unlink($media->getPath());
+
+        $media->delete();
+
+        return true;
     }
 
 }
