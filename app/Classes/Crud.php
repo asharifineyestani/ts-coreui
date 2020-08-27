@@ -6,6 +6,7 @@ namespace App\Classes;
 
 use App\User;
 use Illuminate\Support\Arr;
+use phpDocumentor\Reflection\Types\Integer;
 use Spatie\Permission\Models\Role;
 
 class Crud
@@ -17,6 +18,14 @@ class Crud
     public $fields = [];
     public $object;
     public $mediaPath;
+    public $row;
+
+
+    public function setRow(int $id)
+    {
+        $this->row = $this->model::find($id);
+        return $this;
+    }
 
 
     public function __construct()
@@ -172,8 +181,13 @@ class Crud
     }
 
 
-    public function setDefaults($row)
+    public function setDefaults()
     {
+
+
+        if (!$this->row)
+            return 0;
+
         for ($i = 0; $i < count($this->fields); $i++) {
 
             if (in_array($this->fields[$i]['type'], ['select2_multiple'])) {
@@ -181,8 +195,10 @@ class Crud
             }
 
             $name = $this->fields[$i]['name'];
-            $this->fields[$i]['value'] = $row->$name ?? null;
+            $this->fields[$i]['value'] = $this->row->$name ?? null;
         }
+
+
     }
 
 
