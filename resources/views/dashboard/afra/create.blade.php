@@ -16,7 +16,7 @@
                             <form method="POST" action="{{$crud->route('store')}}">
                                 @csrf
                                 <div class="row">
-                                    @foreach ($crud->fields as $field)
+                                    @foreach ($crud->getFields() as $field)
 
                                         <div class="col-xs-12 col-sm-12 col-md-12">
                                             <div class="form-group">
