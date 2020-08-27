@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Classes\Crud;
+use App\Http\Requests\UserRequest;
 use Illuminate\Http\Request;
 use App\User;
 use Illuminate\Support\Arr;
@@ -57,17 +58,14 @@ class CrudController extends Controller
 
     public function edit($id)
     {
-
-        $row = $this->crud->model::where('id', $id)->first();
-
         $this->crud->resetFields();
+        $this->crud->setRow($id);
         $this->setupEdit();
-        $this->crud->setDefaults($row);
+        $this->crud->setDefaults();
 
 
         return view('dashboard.afra.edit',
             [
-                'row' => $row,
                 'crud' => $this->crud
             ]
         );
@@ -203,7 +201,7 @@ class CrudController extends Controller
         $file->move($path, $name);
 
         return response()->json([
-            'name'          => $name,
+            'name' => $name,
             'original_name' => $file->getClientOriginalName(),
         ]);
 

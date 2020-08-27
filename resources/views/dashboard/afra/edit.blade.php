@@ -13,24 +13,18 @@
                             <br>
                             <x-alert/>
 
-                            <form method="POST" action="{{$crud->route('update' , $row->id)}}">
+                            <form method="POST" action="{{$crud->route('update' , $crud->row->id)}}">
                                 @csrf
                                 @method('PUT')
                                 <div class="row">
-
-
                                     @foreach ($crud->getFields() as $field)
-
                                         <div class="col-xs-12 col-sm-12 col-md-12">
                                             <div class="form-group">
                                                 @isset($field['label'])<strong>{{$field['label']}}:</strong>@endisset
                                                 @include('afra.fields.'.$field['type'], ['field' => $field , 'class' => 'form-control'])
                                             </div>
                                         </div>
-
-
                                     @endforeach
-
 
                                     <div class="col-xs-12 col-sm-12 col-md-12 text-center">
                                         <button class="btn btn-block btn-success"
@@ -39,7 +33,6 @@
                                            class="btn btn-block btn-primary">{{ __('Return') }}</a>
                                     </div>
                                 </div>
-                                {!! Form::close() !!}
                             </form>
                         </div>
                     </div>
