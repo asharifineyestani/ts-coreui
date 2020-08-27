@@ -186,7 +186,6 @@ class CrudController extends Controller
     }
 
 
-
     public function storeMedia(Request $request)
     {
         $path = storage_path('tmp');
@@ -205,6 +204,29 @@ class CrudController extends Controller
             'name'          => $name,
             'original_name' => $file->getClientOriginalName(),
         ]);
+
+    }
+
+
+    public function getMedia($id)
+    {
+
+        $row = $this->crud->model::find($id);
+
+        $medias = $row->getMedia('*');
+
+
+        $result = [];
+
+        foreach ($medias as $media)
+            $result[] = [
+                "name" => $media->name,
+                "size" => $media->size,
+                "url" => $media->getUrl(),
+            ];
+
+        return $result;
+
 
     }
 
