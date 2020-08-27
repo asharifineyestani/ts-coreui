@@ -119,6 +119,7 @@ class CrudController extends Controller
 
     public function store(Request $request)
     {
+
         $this->setupCreate();
 
         $this->validate($request, $this->crud->getValidations());
@@ -129,7 +130,7 @@ class CrudController extends Controller
 
         foreach ($request->input('mediable', []) as $file) {
 
-            $new->addMedia(storage_path('tmp/' . $file))->toMediaCollection('document');
+            $new->addMedia(storage_path('tmp/' . $file))->toMediaCollection();
         }
 
         return redirect($this->crud->route('index'));
@@ -138,16 +139,12 @@ class CrudController extends Controller
 
     public function destroy($id)
     {
+        $row = $this->crud->model::find($id);
 
-        $user = $this->crud->model::find($id);
-
-
-        foreach ($user->getMedia() as $media) {
+        foreach ($row->getMedia('*') as $media)
             $media->delete();
-        }
 
-        $user->delete();
-
+        $row->delete();
         return true;
     }
 
