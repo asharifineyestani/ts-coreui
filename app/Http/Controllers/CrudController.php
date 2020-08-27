@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Classes\Crud;
 use App\Http\Requests\UserRequest;
+use Egulias\EmailValidator\Exception\ExpectingCTEXT;
 use Illuminate\Http\Request;
 use App\User;
 use Illuminate\Support\Arr;
@@ -91,7 +92,13 @@ class CrudController extends Controller
 
         $this->crud->row->update($input);
         DB::table('model_has_roles')->where('model_id', $id)->delete();
-        $this->crud->row->assignRole($request->input('roles'));
+        DB::table('model_has_permissions')->where('model_id', $id)->delete();
+
+
+        if ($this->crud->hasTrait('HasRoles')) {
+            $this->crud->row->assignRole($request->input('roles'));
+            $this->crud->row->givePermissionTo($request->input('permissions'));
+        }
 
 
         $input = $request->all();
@@ -102,18 +109,18 @@ class CrudController extends Controller
         }
 
 
-        $media = $this->crud->row->getMedia('*')->pluck('file_name')->toArray();
+        if ($this->crud->hasTrait('InteractsWithMedia')) {
+            $media = $this->crud->row->getMedia('*')->pluck('file_name')->toArray();
 
-
-        foreach ($request->input('mediable', []) as $file) {
-            if (count($media) === 0 || !in_array($file, $media)) {
-                $this->crud->row->addMedia(storage_path('tmp/' . $file))->toMediaCollection();
+            foreach ($request->input('mediable', []) as $file) {
+                if (count($media) === 0 || !in_array($file, $media)) {
+                    $this->crud->row->addMedia(storage_path('tmp/' . $file))->toMediaCollection();
+                }
             }
         }
 
 
-        return redirect()->route('users.index')
-            ->with('success', 'User updated successfully');
+        return redirect($this->crud->route('index'))->with('success', 'User updated successfully');
     }
 
 
@@ -128,6 +135,13 @@ class CrudController extends Controller
 
         $new = $this->crud->model::create($fields);
 
+
+        if ($this->crud->hasTrait('HasRoles')) {
+            $this->crud->row->assignRole($request->input('roles'));
+            $this->crud->row->givePermissionTo($request->input('permissions'));
+        }
+
+
         foreach ($request->input('mediable', []) as $file) {
 
             $new->addMedia(storage_path('tmp/' . $file))->toMediaCollection();
@@ -141,10 +155,13 @@ class CrudController extends Controller
     {
         $row = $this->crud->model::find($id);
 
-        foreach ($row->getMedia('*') as $media)
-            $media->delete();
+        if ($this->crud->hasTrait('InteractsWithMedia')) {
+            foreach ($row->getMedia('*') as $media)
+                $media->delete();
+        }
 
         $row->delete();
+
         return true;
     }
 

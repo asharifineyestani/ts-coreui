@@ -303,4 +303,18 @@ class Crud
     }
 
 
+
+    public function hasTrait($traitName)
+    {
+        $traits = class_uses($this->object, true);
+
+        $traits = array_map(function ($n) {
+            $class_parts = explode('\\', $n);
+            return end($class_parts);
+        }, $traits);
+
+        return array_search($traitName, $traits) !== false;
+    }
+
+
 }
