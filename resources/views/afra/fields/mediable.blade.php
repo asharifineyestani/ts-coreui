@@ -1,12 +1,23 @@
-    @csrf
-    <div class="form-group">
-        <div class="needsclick dropzone" id="mediable-dropzone">
-        </div>
-    </div>
-    <div>
-        <input class="btn btn-danger" type="submit">
-    </div>
+@php
+    $result = [];
+      if($crud->row) {
+         $medias = $crud->row->getMedia('*');
+          foreach ($medias as $media)
+              $result[] = ([
+                  "name" => $media->name,
+                  "size" => $media->size,
+                  "url" => $media->getUrl(),
+              ]);
+  }
 
+@endphp
+
+
+
+<div class="form-group">
+    <div class="needsclick dropzone" id="mediable-dropzone">
+    </div>
+</div>
 
 
 @push('fields_scripts')
@@ -27,6 +38,21 @@
                 uploadedMediableMap[file.name] = response.name
             },
             removedfile: function (file) {
+
+
+                $.ajax('/crud/deleteMedia/'+file.name, {
+                    type: 'GET',
+                    // data: {name: file.name},
+                    // success: function (data, status, xhr) {
+                    //     console.log('status: ' + status + ', data: ' + data);
+                    // },
+                    // error: function (jqXhr, textStatus, errorMessage) {
+                    //     console.log('Error' + errorMessage);
+                    // }
+                });
+
+
+                console.log(file)
                 file.previewElement.remove()
                 var name = ''
                 if (typeof file.file_name !== 'undefined') {
@@ -37,16 +63,15 @@
                 $('form').find('input[name="mediable[]"][value="' + name + '"]').remove()
             },
             init: function () {
-                    @if(isset($project) && $project->mediable)
-                var files =
-                {!! json_encode($project->mediable) !!}
-                    for (var i in files) {
-                    var file = files[i]
-                    this.options.addedfile.call(this, file)
-                    file.previewElement.classList.add('dz-complete')
-                    $('form').append('<input type="hidden" name="mediable[]" value="' + file.file_name + '">')
-                }
-                @endif
+                let mockFile = '';
+
+                @foreach($result as $media)
+
+                    mockFile = {!! json_encode($media) !!};
+                this.emit("addedfile", mockFile);
+                this.emit("thumbnail", mockFile, mockFile.url);
+                this.emit("complete", mockFile);
+                @endforeach
             }
         }
     </script>
